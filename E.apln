@@ -1,0 +1,59 @@
+:Namespace E
+    ⍝ edit text with structural regular expressions and APL. yy@yiyus.info 2024
+    ∆←{⍺←⊢ ⋄ 0<≢(⍺⎕S⊢)⍣(⊃3≠⎕NC'⍺')⊢⍵} ⋄ ⍙←~∆
+    DO←{⍺←⊢ ⋄ a←⍺⍺ ⋄ w←⍵⍵ ⋄ TRANS←⍺∘(⍺⍺{⍺←⊢ ⋄ ⍺ ⍺⍺ ⍵.Match}) ⋄ CR←{(,⍺)≡⎕CR⍵}
+        GET←{0≠⎕NC'⍺':⎕SIGNAL 6 ⋄ {1=(⊃1⎕NINFO⍠1⊢)⍵:(⊃0⎕NINFO⍠1⊢)⍵,'/*' ⋄ ⊃⎕NGET⍵1}⍵}
+        PUT←{0=⎕NC'⍺':⎕←⍪⍵ ⋄ _←(⊂⍵)⎕NPUT⍺1 ⋄ _←⍵} ⋄ ADD←{(⊂⍵)⎕NPUT⍺2} ⋄ NS←{2=⎕NC'⍺⍺':326=⎕DR⍺⍺ ⋄ 0}
+        CGET←GET⍣('<>'∨.CR'w') ⋄ CPUT←PUT⍣('>'CR'a')
+        ⍺⍺NS⍬:((⊃⍺{a.NR+←1 ⋄ ⍺⍺{⍺⍺∘⍺.(ACTION g CONDITION x|)⍵}/⍵})(⌽⍺⍺),⊂)∇∇⍵⍵⊢⍵
+        3=⎕NC'⍵⍵':⍵CPUT⍺(⍺⍺∇∇({'=<>'∨.CR⍵:'^.*$' ⋄ '|'CR⍵:'\S+' ⋄ ⎕SIGNAL 6}'w'))CGET⍵
+        3=⎕NC'⍺⍺':⍺(⍺⍺{⍺←⊢ ⋄ '<'CR'a':⍺PUT⍵ ⋄ '≤'CR'a':⍺ADD⍵ ⋄ ⍵⍵OP TRANS⍵}⍵⍵)⍵
+        3≠⎕NC'⍺':⎕SIGNAL 6 ⋄ ⊃⍣(1≥≡⍵)⊢⍵⍵OP⍺⍺¨⊆⍵
+    }
+    ⍝ xygv taken from "Structural Regular Expressions" (Pike, 1987), but b is renamed to g
+    ⍝ XY select instead of replacing, GV work on elements, J is join, A is inspired by awk(1)
+    x←{⍺←⊢ ⋄ ⎕THIS.OP←{⍺⍺⎕R⍵⍵⊢⍵} ⋄ ⍺(⍺⍺DO⍵⍵)⍵} ⋄ y←{⍺←⊢ ⋄ ⍺(⍺⍺x('(?<=(',⍵⍵,')|^)(.*?)(?=(',⍵⍵,')|$)'))⍵}
+    X←{⍺←⊢ ⋄ ⎕THIS.OP←{⍺⍺⎕S⍵⍵⊢⍵} ⋄ ⍺(⍺⍺DO⍵⍵)⍵} ⋄ Y←{⍺←⊢ ⋄ ⍺(⍺⍺X('(?<=(',⍵⍵,')|^)(.*?)(?=(',⍵⍵,')|$)'))⍵}
+    g←{⍺←⊢ ⋄ 3=⎕NC'⍵⍵':⍺(⍺⍺{~⍵⍵:⍵ ⋄ ⍺←⊢ ⋄ ⍺ ⍺⍺x'^.*$'⍵}(⍵⍵ ⍵))⍵ ⋄ ⍵⍵⍙⍵:⍵ ⋄ 3=⎕NC'⍺':⍺⍺x'^.*$'⊢⍵ ⋄ ⍺ ⍺⍺ ⍵}
+    v←{⍺←⊢ ⋄ 3=⎕NC'⍵⍵':⍺(⍺⍺{ ⍵⍵:⍵ ⋄ ⍺←⊢ ⋄ ⍺ ⍺⍺x'^.*$'⍵}(⍵⍵ ⍵))⍵ ⋄ ⍵⍵∆⍵:⍵ ⋄ 3=⎕NC'⍺':⍺⍺x'^.*$'⊢⍵ ⋄ ⍺ ⍺⍺ ⍵} 
+    G←{⍺←⊢ ⋄ 3=⎕NC'⍵⍵':⍺(⍺⍺x'^.*$')¨⍵⍵{( ⍺⍺⍵)/⍵}⍵ ⋄ w←⍵⍵{⍵/⍨⍺⍺∘∆¨⍵}⍵ ⋄ 3=⎕NC'⍺⍺':⍺∘⍺⍺¨w ⋄ ⍺∘(⍺⍺x'^.*$')¨w}      
+    V←{⍺←⊢ ⋄ 3=⎕NC'⍵⍵':⍺(⍺⍺x'^.*$')¨⍵⍵{(~⍺⍺⍵)/⍵}⍵ ⋄ w←⍵⍵{⍵/⍨⍺⍺∘⍙¨⍵}⍵ ⋄ 3=⎕NC'⍺⍺':⍺∘⍺⍺¨w ⋄ ⍺∘(⍺⍺x'^.*$')¨w}
+    j←{⍺←⊢ ⋄ ⍵⍵J⍺ ⍺⍺ ⍵}
+    J←{⍺←' ' ⋄ ⊃(⊣,⍺,⊢)/⍵}
+    A←{n←⎕NS((⎕NL-⍳10)~⊂'Test'),⍵ ⋄ n.CONDITION←⍺⍺ ⋄ n.ACTION←⍵⍵ ⋄ n.NR←0 ⋄ ,n}
+    :Namespace Unix
+        _←{⍺←⊢ ⋄ 1=≡⍵:⍪⍺ ⍺⍺⍪⊢X<⍵ ⋄ ⍪⍺ ⍺⍺ ⍵}          ⍝ apply to lines or file
+        head←{⍺←10 ⋄ ⍺<0:(-⍺)↓⍵ ⋄ ⍺↑⍵}_              ⍝ first ⍺ lines (default 10)
+        tail←{⍺←10 ⋄ ⍺<0:⍺↓⍵ ⋄ (-⍺)↑⍵}_              ⍝ last ⍺ lines (default 10)
+        grep←{⊢G⍺,⍵}_ ⋄ grepv←{⊢V⍺,⍵}_               ⍝ select lines matching/not matching ⍺
+        cat←{⍺←'' ⋄ 0<≢⍺:(⊢_⍺)⍪⍵ ⋄ ⍵}_               ⍝ concatenate left and right
+        sed←{(e r)←⍺ ⋄ r x e⊢⍵}_                     ⍝ replace matches of ⍺[0] with ⍺[1]
+        cut←{⍺←1 ⋄ J((⍺-1-⎕IO)∩⍳≢f)⊃¨⊂f←⊢X|⍵}_       ⍝ select fields ⍺ (1 by default)
+        get←{⍺<X=,⍵}_{0=⎕NC'⍺':{⎕←⍵}¨⍵ ⋄ _←⍺ ⍺⍺ ⍵}   ⍝ file ⍺ (default stdout) gets ⍵
+        wc←{≢⊢X|,⍵}_ ⋄ lc←{≢⍵}_ ⋄ cc←{≢⊃,/⍵}_        ⍝ word, line and character count
+    :EndNamespace
+    ∇ Test ;i;MATCH;w;a
+        i←0 ⋄ MATCH←{i+←1 ⋄ ⍺≢⍵:('TEST FAILED: ',⍕⍵)⎕SIGNAL 100 ⋄ _←(2 0⍕i),': ',⍵}
+        w←'monday tuesday wednesday thursday friday'
+        ⎕←'<monday> <tuesday> <wednesday> <thursday> <friday>'MATCH'<&>'x|w
+        ⎕←'yadnom yadseut yadsendew yadsruht yadirf'MATCH⌽x|w
+        ⎕←'mon tues wednes thurs fri'MATCH¯3↓x|w
+        ⎕←'<monday>' '<tuesday>' '<wednesday>' '<thursday>' '<friday>'MATCH'<&>'X|w
+        ⍝ 5
+        ⎕←'mtwtf'MATCH ⊃X|w
+        ⎕←'monday <tuesday> wednesday <thursday> friday'MATCH'<&>'g't'x|w
+        ⎕←'<monday> tuesday <wednesday> thursday <friday>'MATCH'<&>'v't'x|w
+        ⎕←'monday' '<tuesday>' 'wednesday' '<thursday>' 'friday'MATCH'<&>'g't'X|w
+        ⎕←'monday' '<tuesday>' 'wednesday' '<thursday>' 'friday'MATCH{'<&>'g't'⊢⍵}X|w
+        ⍝ 10
+        ⎕←'<monday>' 'tuesday' '<wednesday>' 'thursday' '<friday>'MATCH'<&>'v't'X|w
+        ⎕←'<tuesday>' '<thursday>'MATCH'<&>'G't'⊢X|w
+        ⎕←'<monday>' '<wednesday>' '<friday>'MATCH'<&>'V't'⊢X|w
+        ⎕←'<tuesday> <wednesday>'MATCH J'<&>'G'e'⊢X|w
+        a←'monday'A{'DAY'x'day'⊢⍵}⍬ ⋄ a,←'thursday'A{'dayy'x'day'⊢⍵}⍬⋄ a,←'sday'A('SS'x's')⍬
+        ⎕←'monDAY tueSSday wedneSSday thurSSdayy friday'MATCH a x|w
+        ⍝ 15
+        ⎕←'<monday>' '<wednesday>' '<friday>'MATCH'<&>'V't'⊢X|w
+        ⍝ TODO: GET/PUT file operations, Unix
+    ∇
+:EndNamespace
